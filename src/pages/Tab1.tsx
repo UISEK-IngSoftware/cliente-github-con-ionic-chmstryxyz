@@ -1,12 +1,11 @@
-import React from 'react';
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonList } from '@ionic/react';
-import RepoItem from '../components/RepoItem';
-import './Tab1.css';
-import { useRepos } from '../context/RepoContext';
+import React from 'react'
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonList, IonSpinner, IonText, IonButton } from '@ionic/react'
+import RepoItem from '../components/RepoItem'
+import './Tab1.css'
+import { useRepos } from '../context/RepoContext'
 
 const Tab1: React.FC = () => {
-  const { repos } = useRepos();
-
+  const { repos, loading, error, user, refresh } = useRepos()
   return (
     <IonPage>
       <IonHeader>
@@ -21,6 +20,12 @@ const Tab1: React.FC = () => {
           </IonToolbar>
         </IonHeader>
 
+        {loading && <div style={{ display: 'flex', justifyContent: 'center', padding: 16 }}><IonSpinner name="crescent" /></div>}
+
+        {error && <div style={{ padding: 12 }}><IonText color="danger">{error}</IonText><div style={{ marginTop: 8 }}><IonButton onClick={() => void refresh()}>Reintentar</IonButton></div></div>}
+
+        {user && <div style={{ padding: 12 }}><IonText><strong>{user.name ?? user.login}</strong></IonText></div>}
+
         <IonList>
           {repos.map(repo => (
             <RepoItem key={repo.id} repo={repo} />
@@ -29,7 +34,7 @@ const Tab1: React.FC = () => {
 
       </IonContent>
     </IonPage>
-  );
-};
+  )
+}
 
-export default Tab1;
+export default Tab1
