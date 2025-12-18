@@ -3,8 +3,8 @@
 
 ## Información del Estudiante
 
-- **Nombre:** [Tu nombre completo aquí]
-- **Carrera:** [Tu carrera]
+- **Nombre:** Matías García Andrade
+- **Carrera:** Ingeniería de Software
 - **Fecha de inicio:** [Fecha]
 
 ---
