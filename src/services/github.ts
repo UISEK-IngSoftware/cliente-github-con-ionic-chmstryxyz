@@ -47,3 +47,12 @@ export async function getUserRepos(): Promise<GitHubRepo[]> {
   }
   return []
 }
+
+export async function createRepo(repoData: { name: string, description: string }): Promise<GitHubRepo> {
+  const res = await client.post('/user/repos', {
+    name: repoData.name,
+    description: repoData.description,
+    private: false
+  })
+  return res.data
+}

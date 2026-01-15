@@ -1,22 +1,29 @@
 import React, { useState } from 'react';
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonInput, IonTextarea, IonButton } from '@ionic/react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonInput, IonTextarea, IonButton, IonLoading } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
 import { useRepos } from '../context/RepoContext';
-import './Tab1.css';
 
 const Tab2: React.FC = () => {
-  const { addRepo } = useRepos();
+  const { addRepo, loading } = useRepos();
   const history = useHistory();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [language, setLanguage] = useState('');
-  const [owner, setOwner] = useState('');
 
-  const handleSubmit = (e?: React.FormEvent) => {
+  const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!name.trim()) return;
-    addRepo({ name: name.trim(), description: description.trim(), language: language.trim(), owner: owner.trim() || 'unknown' });
-    history.push('/tab1');
+    
+    try {
+      await addRepo({ 
+        name: name.trim(), 
+        description: description.trim() 
+      });
+      setName('');
+      setDescription('');
+      history.push('/tab1');
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -27,27 +34,31 @@ const Tab2: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
+        <IonLoading isOpen={loading} message={"Creando repositorio..."} />
         <form onSubmit={handleSubmit}>
           <IonList>
             <IonItem>
-              <IonLabel position="stacked">Nombre</IonLabel>
-              <IonInput value={name} onIonChange={e => setName(String(e.detail.value || ''))} required />
+              <IonLabel position="stacked">Nombre del Repositorio</IonLabel>
+              <IonInput 
+                value={name} 
+                onIonChange={e => setName(String(e.detail.value || ''))} 
+                placeholder="ej: mi-nuevo-proyecto"
+                required 
+              />
             </IonItem>
             <IonItem>
               <IonLabel position="stacked">Descripción</IonLabel>
-              <IonTextarea value={description} onIonChange={e => setDescription(String(e.detail.value || ''))} />
+              <IonTextarea 
+                value={description} 
+                onIonChange={e => setDescription(String(e.detail.value || ''))} 
+                placeholder="Opcional"
+              />
             </IonItem>
-            <IonItem>
-              <IonLabel position="stacked">Lenguaje</IonLabel>
-              <IonInput value={language} onIonChange={e => setLanguage(String(e.detail.value || ''))} />
-            </IonItem>
-            <IonItem>
-              <IonLabel position="stacked">Owner</IonLabel>
-              <IonInput value={owner} onIonChange={e => setOwner(String(e.detail.value || ''))} />
-            </IonItem>
-            <IonItem>
-              <IonButton expand="block" type="submit">Crear</IonButton>
-            </IonItem>
+            <div style={{ padding: 16 }}>
+              <IonButton expand="block" type="submit" disabled={loading}>
+                Crear en GitHub
+              </IonButton>
+            </div>
           </IonList>
         </form>
       </IonContent>

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { getUser, getUserRepos, GitHubRepo, GitHubUser } from '../services/github'
+import { getUser, getUserRepos, createRepo, GitHubRepo, GitHubUser } from '../services/github'
 
 type Repository = {
   id: number
@@ -11,7 +11,7 @@ type Repository = {
 
 type RepoContextType = {
   repos: Repository[]
-  addRepo: (repo: Omit<Repository, 'id'>) => void
+  addRepo: (repoData: { name: string; description: string }) => Promise<void>
   loading: boolean
   error: string | null
   user: GitHubUser | null
@@ -32,10 +32,16 @@ export const RepoProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
     try {
       const [u, r] = await Promise.all([getUser(), getUserRepos()])
       setUser(u)
-      const mapped = r.map(repo => ({ id: repo.id, name: repo.name, description: repo.description ?? '', language: repo.language ?? '', owner: repo.owner.login }))
+      const mapped = r.map(repo => ({ 
+        id: repo.id, 
+        name: repo.name, 
+        description: repo.description ?? '', 
+        language: repo.language ?? '', 
+        owner: repo.owner.login 
+      }))
       setRepos(mapped)
     } catch (e: any) {
-      setError(e?.message ?? 'Error')
+      setError(e?.response?.data?.message ?? e?.message ?? 'Error fetching data')
     } finally {
       setLoading(false)
     }
@@ -45,11 +51,25 @@ export const RepoProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
     void fetchAll()
   }, [])
 
-  const addRepo = (repoData: Omit<Repository, 'id'>) => {
-    setRepos(prev => [...prev, { id: Date.now(), ...repoData }])
+  const addRepo = async (repoData: { name: string; description: string }) => {
+    setLoading(true)
+    setError(null)
+    try {
+      await createRepo(repoData)
+      await fetchAll()
+    } catch (e: any) {
+      setError(e?.response?.data?.message ?? e?.message ?? 'Error creating repository')
+      throw e
+    } finally {
+      setLoading(false)
+    }
   }
 
-  return <RepoContext.Provider value={{ repos, addRepo, loading, error, user, refresh: fetchAll }}>{children}</RepoContext.Provider>
+  return (
+    <RepoContext.Provider value={{ repos, addRepo, loading, error, user, refresh: fetchAll }}>
+      {children}
+    </RepoContext.Provider>
+  )
 }
 
 export const useRepos = (): RepoContextType => {
