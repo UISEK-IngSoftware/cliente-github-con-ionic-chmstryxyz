@@ -46,3 +46,11 @@ export async function createRepo(repoData: { name: string, description: string }
   }, { headers: getHeaders() })
   return res.data
 }
+
+export async function updateRepo(owner: string, repo: string, data: { name: string, description: string }): Promise<void> {
+  await client.patch(`/repos/${owner}/${repo}`, data, { headers: getHeaders() })
+}
+
+export async function deleteRepo(owner: string, repo: string): Promise<void> {
+  await client.delete(`/repos/${owner}/${repo}`, { headers: getHeaders() })
+}
