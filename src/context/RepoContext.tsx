@@ -27,12 +27,16 @@ export const RepoProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
   const [user, setUser] = useState<GitHubUser | null>(null)
 
   const fetchAll = async () => {
+    const token = localStorage.getItem('github_token')
+    if (!token) return
+
     setLoading(true)
     setError(null)
     try {
-      const [u, r] = await Promise.all([getUser(), getUserRepos()])
+      const u = await getUser()
+      const r = await getUserRepos()
       setUser(u)
-      const mapped = r.map(repo => ({ 
+      const mapped = r.map((repo: GitHubRepo) => ({ 
         id: repo.id, 
         name: repo.name, 
         description: repo.description ?? '', 
@@ -41,24 +45,23 @@ export const RepoProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
       }))
       setRepos(mapped)
     } catch (e: any) {
-      setError(e?.response?.data?.message ?? e?.message ?? 'Error fetching data')
+      setError('No se pudieron cargar los datos de GitHub')
     } finally {
       setLoading(false)
     }
   }
 
   useEffect(() => {
-    void fetchAll()
+    fetchAll()
   }, [])
 
   const addRepo = async (repoData: { name: string; description: string }) => {
     setLoading(true)
-    setError(null)
     try {
       await createRepo(repoData)
       await fetchAll()
     } catch (e: any) {
-      setError(e?.response?.data?.message ?? e?.message ?? 'Error creating repository')
+      setError('Error al crear el repositorio')
       throw e
     } finally {
       setLoading(false)

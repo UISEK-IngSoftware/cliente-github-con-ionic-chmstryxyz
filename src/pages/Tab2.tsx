@@ -20,7 +20,7 @@ const Tab2: React.FC = () => {
       });
       setName('');
       setDescription('');
-      history.push('/tab1');
+      history.push('/app/tab1');
     } catch (err) {
       console.error(err);
     }

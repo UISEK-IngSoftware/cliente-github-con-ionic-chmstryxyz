@@ -1,61 +1,54 @@
-import React from 'react';
-import {
-  IonContent, IonHeader, IonPage, IonTitle, IonToolbar,
-  IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent,
-  IonAvatar, IonItem, IonLabel
-} from '@ionic/react';
-import './Tab3.css';
+import React from 'react'
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonButton, IonList, IonItem, IonLabel, IonIcon, IonText, IonAvatar } from '@ionic/react'
+import { logOutOutline, personCircleOutline } from 'ionicons/icons'
+import { useRepos } from '../context/RepoContext'
 
 const Tab3: React.FC = () => {
-  const user = {
-    username: "chmstryxyz",
-    name: "Matias Garcia",
-    bio: "Estudiante de Ingeniería de Software en UISEK.",
-    public_repos: 15,
-    followers: 4,
-    avatar_url: "https://ionicframework.com/docs/img/demos/avatar.svg"
+  const { user } = useRepos()
+
+  const handleLogout = () => {
+    localStorage.removeItem('github_token');
+    window.location.href = '/login';
   };
 
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Perfil</IonTitle>
+          <IonTitle>Mi Perfil</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent fullscreen>
-        <IonCard>
-          <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '20px' }}>
-            <IonAvatar style={{ width: '100px', height: '100px' }}>
-              <img alt="avatar" src={user.avatar_url} />
-            </IonAvatar>
-          </div>
-          <IonCardHeader style={{ textAlign: 'center' }}>
-            <IonCardTitle>{user.name}</IonCardTitle>
-            <IonCardSubtitle>@{user.username}</IonCardSubtitle>
-          </IonCardHeader>
-          <IonCardContent style={{ textAlign: 'center' }}>
-            {user.bio}
-          </IonCardContent>
-        </IonCard>
-        <IonCard>
-          <IonCardHeader>
-            <IonCardSubtitle>Estadísticas</IonCardSubtitle>
-          </IonCardHeader>
-          <IonCardContent>
-            <IonItem lines="none">
-              <IonLabel>Repositorios Públicos</IonLabel>
-              <IonLabel slot="end">{user.public_repos}</IonLabel>
-            </IonItem>
-            <IonItem lines="none">
-              <IonLabel>Seguidores</IonLabel>
-              <IonLabel slot="end">{user.followers}</IonLabel>
-            </IonItem>
-          </IonCardContent>
-        </IonCard>
+      <IonContent className="ion-padding">
+        <div style={{ textAlign: 'center', marginTop: '20px' }}>
+          <IonIcon icon={personCircleOutline} style={{ fontSize: '80px' }} color="primary" />
+          <h2>{user?.name || user?.login || 'Usuario'}</h2>
+          <IonText color="medium">
+            <p>{user?.bio || 'Sin biografía'}</p>
+          </IonText>
+        </div>
+
+        <IonList inset={true} style={{ marginTop: '30px' }}>
+          <IonItem>
+            <IonLabel>
+              <h2>Nombre de usuario</h2>
+              <p>{user?.login}</p>
+            </IonLabel>
+          </IonItem>
+        </IonList>
+
+        <IonButton 
+          expand="block" 
+          color="danger" 
+          onClick={handleLogout} 
+          className="ion-margin-top"
+          fill="outline"
+        >
+          <IonIcon icon={logOutOutline} slot="start" />
+          Cerrar Sesión / Cambiar Token
+        </IonButton>
       </IonContent>
     </IonPage>
-  );
-};
+  )
+}
 
-export default Tab3;
+export default Tab3
