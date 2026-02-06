@@ -57,28 +57,40 @@ export const RepoProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
     try {
       await createRepo(repoData)
       await fetchAll()
-    } catch (e) { throw e } finally { setLoading(false) }
+    } catch (e) {
+      throw e
+    } finally {
+      setLoading(false)
+    }
   }
 
   const editRepo = async (owner: string, oldName: string, data: { name: string; description: string }) => {
+    setLoading(true)
     const previousRepos = [...repos]
     setRepos(repos.map(r => (r.name === oldName && r.owner === owner) ? { ...r, ...data } : r))
     try {
       await updateRepo(owner, oldName, data)
+      await fetchAll()
     } catch (e) {
       setRepos(previousRepos)
       throw e
+    } finally {
+      setLoading(false)
     }
   }
 
   const removeRepo = async (owner: string, repoName: string) => {
+    setLoading(true)
     const previousRepos = [...repos]
     setRepos(repos.filter(r => !(r.name === repoName && r.owner === owner)))
     try {
       await deleteRepo(owner, repoName)
+      await fetchAll()
     } catch (e) {
       setRepos(previousRepos)
       throw e
+    } finally {
+      setLoading(false)
     }
   }
 

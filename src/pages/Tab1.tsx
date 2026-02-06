@@ -20,9 +20,21 @@ const Tab1: React.FC = () => {
           </IonToolbar>
         </IonHeader>
 
-        {loading && <div style={{ display: 'flex', justifyContent: 'center', padding: 16 }}><IonSpinner name="crescent" /></div>}
+        {loading && (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 16 }}>
+            <IonSpinner name="crescent" />
+            <IonText style={{ marginTop: 8 }}>Cargando repositorios...</IonText>
+          </div>
+        )}
 
-        {error && <div style={{ padding: 12 }}><IonText color="danger">{error}</IonText><div style={{ marginTop: 8 }}><IonButton onClick={() => void refresh()}>Reintentar</IonButton></div></div>}
+        {error && (
+          <div style={{ padding: 12 }}>
+            <IonText color="danger">{error}</IonText>
+            <div style={{ marginTop: 8 }}>
+              <IonButton onClick={() => void refresh()}>Reintentar</IonButton>
+            </div>
+          </div>
+        )}
 
         {user && <div style={{ padding: 12 }}><IonText><strong>{user.name ?? user.login}</strong></IonText></div>}
 

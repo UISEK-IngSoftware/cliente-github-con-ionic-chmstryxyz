@@ -1,5 +1,5 @@
 import React, { useRef } from 'react'
-import { IonItem, IonLabel, IonItemSliding, IonItemOptions, IonItemOption, IonIcon, useIonAlert, IonNote, useIonToast } from '@ionic/react'
+import { IonItem, IonLabel, IonItemSliding, IonItemOptions, IonItemOption, IonIcon, useIonAlert, IonNote, useIonToast, IonLoading } from '@ionic/react'
 import { trash, pencil, logoGithub } from 'ionicons/icons'
 import { useRepos } from '../context/RepoContext'
 
@@ -8,7 +8,7 @@ interface RepoItemProps {
 }
 
 const RepoItem: React.FC<RepoItemProps> = ({ repo }) => {
-  const { removeRepo, editRepo } = useRepos()
+  const { removeRepo, editRepo, loading } = useRepos()
   const [presentAlert] = useIonAlert()
   const [presentToast] = useIonToast()
   const slidingRef = useRef<HTMLIonItemSlidingElement>(null)
@@ -68,26 +68,29 @@ const RepoItem: React.FC<RepoItemProps> = ({ repo }) => {
   }
 
   return (
-    <IonItemSliding ref={slidingRef}>
-      <IonItem detail={false}>
-        <IonIcon slot="start" icon={logoGithub} />
-        <IonLabel>
-          <h2 style={{ fontWeight: 'bold' }}>{repo.name}</h2>
-          <p>{repo.description || 'Sin descripción'}</p>
-          <p style={{ fontSize: '12px', color: 'gray' }}>Lenguaje: {repo.language || 'N/A'}</p>
-        </IonLabel>
-        <IonNote slot="end">{repo.owner}</IonNote>
-      </IonItem>
+    <>
+      <IonLoading isOpen={loading} message="Procesando..." />
+      <IonItemSliding ref={slidingRef}>
+        <IonItem detail={false}>
+          <IonIcon slot="start" icon={logoGithub} />
+          <IonLabel>
+            <h2 style={{ fontWeight: 'bold' }}>{repo.name}</h2>
+            <p>{repo.description || 'Sin descripción'}</p>
+            <p style={{ fontSize: '12px', color: 'gray' }}>Lenguaje: {repo.language || 'N/A'}</p>
+          </IonLabel>
+          <IonNote slot="end">{repo.owner}</IonNote>
+        </IonItem>
 
-      <IonItemOptions side="end">
-        <IonItemOption color="primary" onClick={handleEdit}>
-          <IonIcon slot="icon-only" icon={pencil} />
-        </IonItemOption>
-        <IonItemOption color="danger" onClick={handleDelete}>
-          <IonIcon slot="icon-only" icon={trash} />
-        </IonItemOption>
-      </IonItemOptions>
-    </IonItemSliding>
+        <IonItemOptions side="end">
+          <IonItemOption color="primary" onClick={handleEdit}>
+            <IonIcon slot="icon-only" icon={pencil} />
+          </IonItemOption>
+          <IonItemOption color="danger" onClick={handleDelete}>
+            <IonIcon slot="icon-only" icon={trash} />
+          </IonItemOption>
+        </IonItemOptions>
+      </IonItemSliding>
+    </>
   )
 }
 
